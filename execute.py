@@ -52,7 +52,7 @@ optimizer = tf.keras.optimizers.Adam()
 loss_object = tf.keras.losses.MeanAbsoluteError()
 
 def loss_function(real, pred):
-	return loss_object(real, pred)
+    return loss_object(real, pred)
 
 checkpoint_dir = './training_checkpoint'
 checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
@@ -61,38 +61,38 @@ checkpoint = tf.train.Checkpoint(optimizer=optimizer, model=lstm)
 @tf.function
 def train_step(inp, targ):
 
-	with tf.GradientTape() as tape:
-		outputs = lstm(inp)
-		loss = loss_object(targ, outputs)
+    with tf.GradientTape() as tape:
+        outputs = lstm(inp)
+        loss = loss_object(targ, outputs)
 
-	variables = lstm.trainable_variables
-	gradients = tape.gradient(loss, variables)
-	optimizer.apply_gradients(zip(gradients, variables))
+    variables = lstm.trainable_variables
+    gradients = tape.gradient(loss, variables)
+    optimizer.apply_gradients(zip(gradients, variables))
 
-	return loss
+    return loss
 
 def train():
-	EPOCHS = 10
-	for epoch in range(EPOCHS):
-		total_loss = 0
-		for (batch, (inp, targ)) in enumerate(train_dataset.take(steps_per_epoch)):
-			batch_loss = train_step(inp, targ)
-			total_loss += batch_loss
+    EPOCHS = 10
+    for epoch in range(EPOCHS):
+        total_loss = 0
+	for (batch, (inp, targ)) in enumerate(train_dataset.take(steps_per_epoch)):
+	    batch_loss = train_step(inp, targ)
+	    total_loss += batch_loss
 			
-			if batch % 100 == 0:
-				print('Epoch {} Batch {} Loss {:.4f}'.format(epoch + 1, batch, batch_loss.numpy()))
-		if (epoch + 1) % 2 == 0:
-			checkpoint.save(file_prefix = checkpoint_prefix)
-		print('Epoch {} Loss {:.4f}'.format(epoch + 1, total_loss / steps_per_epoch))
+	    if batch % 100 == 0:
+	        print('Epoch {} Batch {} Loss {:.4f}'.format(epoch + 1, batch, batch_loss.numpy()))
+	if (epoch + 1) % 2 == 0:
+	    checkpoint.save(file_prefix = checkpoint_prefix)
+	    print('Epoch {} Loss {:.4f}'.format(epoch + 1, total_loss / steps_per_epoch))
 
 def pred(input_x):
-	checkpoint.restore(tf.train.latest_checkpoint(checkpoint_dir))
-	predictions = lstm(input_x)
-	print(predictions.numpy())
+    checkpoint.restore(tf.train.latest_checkpoint(checkpoint_dir))
+    predictions = lstm(input_x)
+    print(predictions.numpy())
 	
 if __name__ == "__main__":
-	# train()
-	input_x = train_x[0:20]
-	real_y = train_y[0:20]
-	pred(input_x)
+    # train()
+    input_x = train_x[0:20]
+    real_y = train_y[0:20]
+    pred(input_x)
     
