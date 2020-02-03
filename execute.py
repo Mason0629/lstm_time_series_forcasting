@@ -75,15 +75,16 @@ def train():
     EPOCHS = 10
     for epoch in range(EPOCHS):
         total_loss = 0
-	for (batch, (inp, targ)) in enumerate(train_dataset.take(steps_per_epoch)):
-	    batch_loss = train_step(inp, targ)
-	    total_loss += batch_loss
-			
-	    if batch % 100 == 0:
-	        print('Epoch {} Batch {} Loss {:.4f}'.format(epoch + 1, batch, batch_loss.numpy()))
-	if (epoch + 1) % 2 == 0:
-	    checkpoint.save(file_prefix = checkpoint_prefix)
-	    print('Epoch {} Loss {:.4f}'.format(epoch + 1, total_loss / steps_per_epoch))
+        for (batch, (inp, targ)) in enumerate(train_dataset.take(steps_per_epoch)):
+            batch_loss = train_step(inp, targ)
+            total_loss += batch_loss
+
+            if batch % 100 == 0:
+                print('Epoch {} Batch {} Loss {:.4f}'.format(epoch + 1, batch, batch_loss.numpy()))
+
+        if (epoch + 1) % 2 == 0:
+            checkpoint.save(file_prefix = checkpoint_prefix)
+            print('Epoch {} Loss {:.4f}'.format(epoch + 1, total_loss / steps_per_epoch))
 
 def pred(input_x):
     checkpoint.restore(tf.train.latest_checkpoint(checkpoint_dir))
@@ -91,7 +92,7 @@ def pred(input_x):
     print(predictions.numpy())
 	
 if __name__ == "__main__":
-    # train()
+    train()
     input_x = train_x[0:20]
     real_y = train_y[0:20]
     pred(input_x)
